@@ -1,0 +1,178 @@
+swagger: "2.0"
+info:
+  description: "This is the API of LOG-GAUSS server.  http://naos.logs.chap.governify.io/api/v1"
+  version: "1"
+  title: "LOGS-GAUSS API"
+  termsOfService: "www.isa.us.es"
+  contact:
+    name: "ISA Research Group"
+    url: "http://www.isa.us.es"
+    email: "isagroup.us@gmail.com"
+  license:
+    name: "MIT"
+    url: "http://opensource.org/licenses/MIT"
+host: "naos.logs.chap.governify.io"
+basePath: "/api/v1"
+tags:
+- name: "gauss-logs"
+  description: "GAUSS Logs"
+  externalDocs:
+    description: "Find out more"
+    url: "http://naos.logs.chap.governify.io"
+
+schemes:
+- "http"
+paths:
+  /logs:
+    get:
+      tags:
+      - "logs"
+      summary: "Finds Logs by endgte(date) and endlte(date) "
+      description: "Returns logs between endgte(date) and endlte(date)"
+      operationId: "getLogsNaos"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "endgte"
+        in: "query"
+        description: "Date which establish the init of the search. (END must be Greater Than it or Equals)"
+        required: true
+        type: "string"
+        format: "date"
+      - name: "endlte"
+        in: "query"
+        description: "Date which establish the end of the search. (END must be Lower Than it or Equals)"
+        required: true
+        type: "string"
+        format: "date"
+      responses:
+        200:
+          description: "Success"
+        500:
+          description: "Invalid window parameters"
+  /count:
+    get:
+      tags:
+      - "count"
+      summary: "Find in database the total of GAUSS logs in database."
+      description: "Returns the count of GAUSS logs inserted in database."
+      operationId: "getCount"
+      produces:
+      - "application/xml"
+      - "application/json"
+      responses:
+        200:
+          description: "Success"
+        500:
+          description: "Error finding in DB."    
+  /ctrl/update:
+    post:
+      tags:
+      - "ctrl"
+      summary: "Update the logs only one iteration."
+      description: "Insert in database the latest chunk of logs (if there are news)"
+      operationId: "postUpdate"
+      responses:
+        200:
+          description: "Latest logs updated in database."
+        500:
+          description: "Error updating logs."
+  /ctrl/start:
+    post:
+      tags:
+      - "ctrl"
+      summary: "Launches a loop to keep continually updating logs."
+      description: "Inserts continually all logs since the last one inserted in database."
+      operationId: "startUpdate"
+      responses:
+        200:
+          description: "Latest logs updated in database."
+        406:
+          description: "There is a current execution, please stop it before try again."
+        500:
+          description: "Error updating logs."
+  
+  
+  /ctrl/stop:
+    post:
+      tags:
+      - "ctrl"
+      summary: "Stop the execution of the endpoint /start"
+      description: "Deletes the loop(if exist) which keep endpoint /start running."
+      operationId: "stopUpdate"
+      responses:
+        200:
+          description: "Execution has been stopped."
+        406:
+          description: "Can't stop the execution because don't exist any loop to stop."
+        500:
+          description: "Error stopping loop."
+  
+
+definitions:
+  complex_log:
+    type: "object"
+    properties:
+      ID:
+        type: "integer"
+        format: "int64"
+      INIT:
+        type: "string"
+        format: "date"
+      END:
+        type: "string"
+        format: "date"
+      PRIORITY:
+        type: "string"
+      TYPE:
+        type: "string"
+      LOGS:
+        type: "array"
+        items: 
+          $ref: '#/definitions/gauss_log'
+  gauss_log:
+    type: "object"
+    properties:
+      ACTION : 
+        type: "string"
+      ACTION_DEF_ID :
+        type: "boolean"
+      ACTION_USER_ID :
+        type: "boolean"
+      REATION_DATE : 
+        type: "string"
+        format: "date"
+      CREATION_DATE_STR : 
+        type: "boolean"
+      DOCUMENT_DM_ID :
+        type: "boolean"
+      DOCUMENTS :
+        type: "boolean"
+      INCIDENT_ID :
+        type: "integer"
+        format: "int64"
+      LEVEL_SOLUTION_DTO :
+        type: "boolean"
+      LEVEL_SOLUTION_ID :
+        type: "boolean"
+      REASON_DEF_DTO : 
+        type: "boolean"
+      REASON_DEF_ID :
+        type: "boolean"
+      SID : 
+        type: "integer"
+        format: "int64"
+      USER : 
+        type: "string"
+      VALUE :
+        type: "string"
+      PRIORITY : 
+        type: "string"
+      TYPE : 
+        type: "string"
+      
+    
+    
+    
+  
